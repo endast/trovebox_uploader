@@ -28,13 +28,15 @@ except IOError, e:
     print 'Please check ~/.config/trovebox/default. More info: https://github.com/photo/openphoto-python'
     raise e
 
-# Global
-CHECK_DUPLICATES_LOCALLY = False
-hashes = []
-
-
 def is_folder(path):
     return os.path.isdir(path)
+
+
+def image_uploaded(photo):
+    res = client.photos.list(hash=hash_file(photo))
+    if len(res) > 0:
+        return True
+    return False
 
 def is_image(file):
     valid_types = ["jpg","jpeg","gif","png"]
@@ -72,14 +74,13 @@ def upload_photo(path, tagslist=[]):
     tags = ','.join([str(item) for item in tagslist])
 
     if CHECK_DUPLICATES_LOCALLY:
-        if is_duplicate(path):
-            sys.stdout.write('- already uploaded (local check) - Ok!\n')
+        if image_uploaded(path):
+            sys.stdout.write('- already uploaded (preupload check) - Ok!\n')
 
             return False
 
     try:
         resp = client.photo.upload(path, tags=tags)
-        #print resp
     except TroveboxDuplicateError:
         sys.stdout.write('- already uploaded ')
     except TroveboxError, e:
@@ -91,24 +92,6 @@ def upload_photo(path, tagslist=[]):
 
     sys.stdout.write('- Ok!\n')
     return True
-
-def get_photo_data():
-    options = {"pageSize": "0"}
-    photos = client.photos.list(options)
-    return photos
-
-def is_duplicate(photo):
-    global hashes
-    return hash_file(photo) in hashes
-
-def get_hashes():
-    hashes = []
-    print "\nLoading photo data...\n"
-    photos = get_photo_data()
-    
-    for photo in photos:
-        hashes.append(str(photo.hash))
-    return hashes
 
 def hash_file(filepath):
     sha1 = hashlib.sha1()
@@ -128,12 +111,8 @@ def main():
 
     args = parser.parse_args()
     global CHECK_DUPLICATES_LOCALLY
-    global hashes
 
     CHECK_DUPLICATES_LOCALLY = args.check_duplicates_locally
-
-    if args.check_duplicates_locally:
-        hashes = get_hashes()
 
     tags = args.tags
     path = args.path
