@@ -93,7 +93,7 @@ You can install taskspooler on OSX with homebrew:
 
     brew install task-spooler
 
-For more info on visit: http://vicerveza.homeunix.net/~viric/soft/ts/
+For more info on tasospooler visit: http://vicerveza.homeunix.net/~viric/soft/ts/
 
 ## Versions
 0.2 - Added support for permissions and albums
