@@ -129,7 +129,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-i", "--input", required=True, dest='path', help="Path to a file or directory to upload")
-    parser.add_argument("-c", "--check-duplicates-locally", default=False, action="store_true", help="Check for aldready uploaded images locally, increases the time it takes initialize the program (depending on the number of files in your trovebox account) but will execute faster.")
+    parser.add_argument("-c", "--check-duplicates-locally", default=False, action="store_true", help="Check for aldready uploaded images locally, increases number of request to the server, but can increase speed if you have duplicates in the images you are uploading.")
     parser.add_argument("-t", "--tags", nargs='+',default=[], help="List of tags to add to the uploaded files")
     parser.add_argument("-a", "--albums", nargs='+',default=[], help="Albums to add the images to")
     parser.add_argument("-p", "--public",default=False,action="store_true", help="Make the images uploaded public, default False")
