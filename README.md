@@ -57,6 +57,24 @@ You can of course combine all of the arguments:
 
 
 ## Help
+    usage: trovebox-uploader.py [-h] -i PATH [-c] [-t TAGS [TAGS ...]]
+                                [-a ALBUMS [ALBUMS ...]] [-p]
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -i PATH, --input PATH
+                            Path to a file or directory to upload
+      -c, --check-duplicates-locally
+                            Check for aldready uploaded images locally, increases
+                            number of request to the server, but can increase
+                            speed if you have duplicates in the images you are
+                            uploading.
+      -t TAGS [TAGS ...], --tags TAGS [TAGS ...]
+                            List of tags to add to the uploaded files
+      -a ALBUMS [ALBUMS ...], --albums ALBUMS [ALBUMS ...]
+                            Albums to add the images to
+      -p, --public          Make the images uploaded public, default False
+
 
 
 ## Versions
