@@ -75,7 +75,20 @@ You can of course combine all of the arguments:
                             Albums to add the images to
       -p, --public          Make the images uploaded public, default False
 
+## Pro tip
+Using taskspooler you can queue upload jobs easily:
 
+    ts python trovebox-uploader.py -i path_to_image_or_folder
+
+To check the progress of your uploads just run:
+    
+    ts
+
+You can install taskspooler on OSX with homebrew:
+
+    brew install task-spooler
+
+For more info on visit: http://vicerveza.homeunix.net/~viric/soft/ts/
 
 ## Versions
 0.2 - Added support for permissions and albums
