@@ -42,7 +42,7 @@ Adding the image/images to album Dead_Parrot:
 
     python trovebox-uploader.py -i path_to_image_or_folder -a Dead_Parrot
 
-Check if the image is a duplicate before uploading the image to the server, makes an extra request to the server. But can save you a time if you have duplicates in your source. Default off:
+Check if the image is a duplicate before uploading the image to the server, makes an extra request to the server. But can save you time, if you have duplicates in your source. Default off:
 
     python trovebox-uploader.py -i path_to_image_or_folder -c
 
