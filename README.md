@@ -53,7 +53,7 @@ Making the uploaded images public:
   
 You can of course combine all of the arguments:
 
-    python trovebox-uploader.py -i dark_knight.jpg -c -p -t pass none shall -a Grail
+    python trovebox-uploader.py -i black_knight.jpg -c -p -t pass none shall -a Grail
 
 
 ## Help
