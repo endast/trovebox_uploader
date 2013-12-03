@@ -82,7 +82,12 @@ Using taskspooler you can queue upload jobs easily:
 
 To check the progress of your uploads just run:
     
-    ts
+    $ ts
+    ID   State      Output               E-Level  Times(r/u/s)   Command [run=0/1]
+    0    running   /tmp/ts-out.FdbteW   1        0.14/0.09/0.04 python trovebox-uploader.py -i path_to_image_or_folder
+    1    queued   /tmp/ts-out.KsOrSJ   1        0.13/0.09/0.04 python trovebox-uploader.py -i knight.jpg
+    2    finished   /tmp/ts-out.kjHEMT   1        0.14/0.09/0.04 python trovebox-uploader.py -i knights.jpg -t ni
+
 
 You can install taskspooler on OSX with homebrew:
 
