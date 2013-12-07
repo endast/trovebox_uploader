@@ -103,10 +103,8 @@ def upload_photo(path, tagslist=[], albums=[], public=False):
         sys.stdout.write('- already uploaded ')
     except TroveboxError, e:
         print e.message
-        raise e
     except IOError, e:
         print e
-        raise e
 
     sys.stdout.write('- Ok!\n')
     return True
