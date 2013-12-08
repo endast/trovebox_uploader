@@ -40,7 +40,11 @@ def image_uploaded(photo):
 
 def is_image(file):
     valid_types = ["jpg","jpeg","gif","png"]
-    image_type = imghdr.what(file)
+    try:
+        image_type = imghdr.what(file)
+    except IOError, e:
+        print e
+        return false
 
     if image_type in valid_types:
         return True
