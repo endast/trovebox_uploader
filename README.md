@@ -30,7 +30,7 @@ file in ``~/.config/trovebox/default``
 
 for more info see https://github.com/photo/openphoto-python/
 
-Simplest use case, just upload the specified image or folder of images:
+Simplest use case, just upload the specified image or folder of images (If the target is a folder only the top level files will be uploaded, for sub folders use -r):
 
     python trovebox-uploader.py -i path_to_image_or_folder
 
@@ -50,7 +50,12 @@ Check if the image is a duplicate before uploading the image to the server, make
 Making the uploaded images public:
     
     python trovebox-uploader.py -i path_to_image_or_folder -p
-  
+
+Also upload subfoldrs from folder:
+    
+    python trovebox-uploader.py -i path_to_folder -r
+
+
 You can of course combine all of the arguments:
 
     python trovebox-uploader.py -i black_knight.jpg -c -p -t pass none shall -a Grail
@@ -74,6 +79,7 @@ You can of course combine all of the arguments:
       -a ALBUMS [ALBUMS ...], --albums ALBUMS [ALBUMS ...]
                             Albums to add the images to
       -p, --public          Make the images uploaded public, default False
+      -r, --recursive       Also upload subfolders if target is a folder, default False
 
 ## Pro tip
 Using taskspooler you can queue upload jobs easily:
@@ -96,6 +102,8 @@ You can install taskspooler on OSX with homebrew:
 For more info on tasospooler visit: http://vicerveza.homeunix.net/~viric/soft/ts/
 
 ## Versions
+0.3 - Added -r option, search subfolders
+
 0.2 - Added support for permissions and albums
 
 0.1 - First version

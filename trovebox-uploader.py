@@ -3,7 +3,7 @@
 """
 trovebox-uploader.py
 
-version 0.2
+version 0.3
 
 Created by Magnus Wahlberg on 2013-11-27.
 Copyright (c) 2012 Wahlberg Research And Development. All rights reserved.
@@ -16,17 +16,16 @@ import hashlib
 import argparse
 from trovebox import Trovebox
 from trovebox.errors import TroveboxError, TroveboxDuplicateError
-import unicodedata
 
 # Init
 try:
     client = Trovebox()
     client.configure(api_version=2)
 
-except IOError, e:
+except IOError, E:
     print 'Could not connect to Trovebox'
     print 'Please check ~/.config/trovebox/default. More info: https://github.com/photo/openphoto-python'
-    raise e
+    raise E
 
 def is_folder(path):
     return os.path.isdir(path)
@@ -39,12 +38,11 @@ def image_uploaded(photo):
     return False
 
 def is_image(file):
-    valid_types = ["jpg","jpeg","gif","png"]
+    valid_types = ["jpg", "jpeg", "gif", "png"]
     try:
         image_type = imghdr.what(file)
     except IOError, e:
-        print e
-        return false
+        return False
 
     if image_type in valid_types:
         return True
@@ -66,9 +64,8 @@ def scan_folder(path):
     if not os.path.exists(path):
         print path, "does not exist"
         return files
-
-    for (dirpath, dirnames, filenames) in os.walk(path):    
-        files.extend(os.path.join(dirpath, filename) for filename in filenames)         
+    for file in os.listdir(path):
+        files.append(os.path.join(path, file))
     return files
 
 def get_album_ids(album_names):
@@ -87,10 +84,8 @@ def get_album_ids(album_names):
 def upload_photo(path, tagslist=[], albums=[], public=False):
     sys.stdout.write('uploading ' + path + " ")
 
-
     if albums:
         albums = get_album_ids(albums)
-
 
     # Convert list of tags to strings
     tags = list_to_string(tagslist)
@@ -98,11 +93,10 @@ def upload_photo(path, tagslist=[], albums=[], public=False):
     if CHECK_DUPLICATES_LOCALLY:
         if image_uploaded(path):
             sys.stdout.write('- already uploaded (preupload check) - Ok!\n')
-
             return False
 
     try:
-        resp = client.photo.upload(path, tags=tags, albums=albums, permission=public)
+        client.photo.upload(path, tags=tags, albums=albums, permission=public)
     except TroveboxDuplicateError:
         sys.stdout.write('- already uploaded ')
     except TroveboxError, e:
@@ -127,14 +121,18 @@ def hash_file(filepath):
         f.close()
     return sha1.hexdigest()
 
+def recursive_search(rootdir):
+    return [f[0] for f in os.walk(rootdir)]
+
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-i", "--input", required=True, dest='path', help="Path to a file or directory to upload")
+    parser.add_argument("-i", "--input", required=True, dest='path', help="Path to a file or directory to upload. If directory, only uploads file in top level. To scan subfolders use -r")
     parser.add_argument("-c", "--check-duplicates-locally", default=False, action="store_true", help="Check for aldready uploaded images locally, increases number of request to the server, but can increase speed if you have duplicates in the images you are uploading.")
-    parser.add_argument("-t", "--tags", nargs='+',default=[], help="List of tags to add to the uploaded files")
-    parser.add_argument("-a", "--albums", nargs='+',default=[], help="Albums to add the images to")
-    parser.add_argument("-p", "--public",default=False,action="store_true", help="Make the images uploaded public, default False")
+    parser.add_argument("-t", "--tags", nargs='+', default=[], help="List of tags to add to the uploaded files")
+    parser.add_argument("-a", "--albums", nargs='+', default=[], help="Albums to add the images to")
+    parser.add_argument("-p", "--public", default=False, action="store_true", help="Make the images uploaded public, default False")
+    parser.add_argument("-r", "--recursive", default=False, action="store_true", help="Also upload subfolders if target is a folder, default False")
 
     args = parser.parse_args()
     global CHECK_DUPLICATES_LOCALLY
@@ -145,10 +143,16 @@ def main():
     path = args.path
     albums = args.albums
     public = args.public
-
+    recursive = args.recursive
+    
     if is_folder(path):
-        uploaded_files = upload_folder(path, tags, albums, public)
-        print "\nUploaded", uploaded_files, "images from", path, "\n"
+        if recursive:
+            for folder in recursive_search(path):
+                uploaded_files = upload_folder(folder, tags, albums, public)
+                print "\nUploaded", uploaded_files, "images from", folder, "\n"
+        else:
+            uploaded_files = upload_folder(path, tags, albums, public)
+            print "\nUploaded", uploaded_files, "images from", path, "\n"
     else:
         upload_photo(path, tags, albums, public)
 
