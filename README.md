@@ -30,7 +30,7 @@ file in ``~/.config/trovebox/default``
 
 for more info see https://github.com/photo/openphoto-python/
 
-Simplest use case, just upload the specified image or folder of images:
+Simplest use case, just upload the specified image or folder of images (If the target is a folder only the top level files will be uploaded, for sub folders use -r):
 
     python trovebox-uploader.py -i path_to_image_or_folder
 
