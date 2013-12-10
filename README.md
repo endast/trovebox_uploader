@@ -107,3 +107,7 @@ For more info on tasospooler visit: http://vicerveza.homeunix.net/~viric/soft/ts
 0.2 - Added support for permissions and albums
 
 0.1 - First version
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/endast/trovebox_uploader/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
