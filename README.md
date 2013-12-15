@@ -99,7 +99,7 @@ You can install taskspooler on OSX with homebrew:
 
     brew install task-spooler
 
-For more info on tasospooler visit: http://vicerveza.homeunix.net/~viric/soft/ts/
+For more info on task spooler visit: http://vicerveza.homeunix.net/~viric/soft/ts/
 
 ## Versions
 0.3 - Added -r option, search subfolders
