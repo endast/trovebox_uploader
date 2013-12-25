@@ -3,7 +3,7 @@
 """
 trovebox-uploader.py
 
-version 0.3
+version 0.3.1
 
 Created by Magnus Wahlberg on 2013-11-27.
 Copyright (c) 2012 Wahlberg Research And Development. All rights reserved.
@@ -96,7 +96,7 @@ def upload_photo(path, tagslist=[], albums=[], public=False):
             return False
 
     try:
-        client.photo.upload(path, tags=tags, albums=albums, permission=public)
+        client.photo.upload(path.decode(sys.getfilesystemencoding()), tags=tags, albums=albums, permission=public)
     except TroveboxDuplicateError:
         sys.stdout.write('- already uploaded ')
     except TroveboxError, e:
