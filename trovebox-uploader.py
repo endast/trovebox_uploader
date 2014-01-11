@@ -94,10 +94,16 @@ def upload_photo(path, tagslist=[], albums=[], public=False, update_metadata=Fal
     # Convert list of tags to strings
     tags = list_to_string(tagslist)
     albums = list_to_string(albums)
-    if CHECK_DUPLICATES_LOCALLY and not update_metadata:
+
+    if CHECK_DUPLICATES_LOCALLY:
         if image_uploaded(path):
-            sys.stdout.write('- already uploaded (preupload check) - Ok!\n')
-            return False
+            if update_metadata:
+                sys.stdout.write('- already uploaded, updating metadata - Ok')
+                update_photo_metadata(path, tags, albums, public)
+                return False
+            else:
+                sys.stdout.write('- already uploaded (preupload check) - Ok!\n')
+                return False
 
     try:
         client.photo.upload(path.decode(sys.getfilesystemencoding()), tags=tags, albums=albums, permission=public)
@@ -105,6 +111,7 @@ def upload_photo(path, tagslist=[], albums=[], public=False, update_metadata=Fal
         if update_metadata:
             sys.stdout.write('- already uploaded, updating metadata - Ok')
             update_photo_metadata(path, tags, albums, public)
+            return False
         else:
             sys.stdout.write('- already uploaded - Ok')
     except TroveboxError, e:
@@ -145,7 +152,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-i", "--input", required=True, dest='path', help="Path to a file or directory to upload. If directory, only uploads file in top level. To scan subfolders use -r")
-    parser.add_argument("-c", "--check-duplicates-locally", default=False, action="store_true", help="Check for aldready uploaded images locally, increases number of request to the server, but can increase speed if you have duplicates in the images you are uploading. (Ignored if used with -u/--update-metadata)")
+    parser.add_argument("-c", "--check-duplicates-locally", default=False, action="store_true", help="Check for aldready uploaded images locally, increases number of request to the server, but can increase speed if you have duplicates in the images you are uploading.")
     parser.add_argument("-t", "--tags", nargs='+', default=[], help="List of tags to add to the uploaded files")
     parser.add_argument("-a", "--albums", nargs='+', default=[], help="Albums to add the images to")
     parser.add_argument("-p", "--public", default=False, action="store_true", help="Make the images uploaded public, default False")
