@@ -3,7 +3,7 @@
 """
 trovebox-uploader.py
 
-version 0.3.1
+version 0.4
 
 Created by Magnus Wahlberg on 2013-11-27.
 Copyright (c) 2012 Wahlberg Research And Development. All rights reserved.
