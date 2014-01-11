@@ -61,7 +61,7 @@ You can of course combine all of the arguments:
     python trovebox-uploader.py -i black_knight.jpg -c -p -t pass none shall -a Grail
 
 If you have uploaded a photo but forgot to add a tag/album/permission etc,
-you can use the -u switch to update the metadata (replacing all existing metadata)
+you can use the -u switch to update the metadata (replacing existing metadata)
 
     python trovebox-uploader.py -i already_uploaded_but_no_tags.jpg -c -t Shrubbery Lumberjack -a Silly_Walk
 
@@ -86,7 +86,7 @@ you can use the -u switch to update the metadata (replacing all existing metadat
       -p, --public          Make the images uploaded public, default False
       -r, --recursive       Also upload subfolders if target is a folder, default False
       -u, --update-metadata
-                            Also update metadata for images aldready uploaded. (Tags, albums)
+                            Also update metadata for images aldready uploaded. (Tags, albums, etc)
 
 ## Pro tip
 Using taskspooler you can queue upload jobs easily:
