@@ -98,13 +98,17 @@ def upload_photo(path, tagslist=[], albums=[], public=False):
     try:
         client.photo.upload(path.decode(sys.getfilesystemencoding()), tags=tags, albums=albums, permission=public)
     except TroveboxDuplicateError:
-        sys.stdout.write('- already uploaded ')
+        if update_metadata:
+            sys.stdout.write('- already uploaded, updating metadata - Ok')
+            update_photo_metadata(path, tags, albums, public)
+        else:
+            sys.stdout.write('- already uploaded - Ok')
     except TroveboxError, e:
         print e.message
     except IOError, e:
+        sys.stdout.write('- Failed!\n')
         print e
 
-    sys.stdout.write('- Ok!\n')
     return True
 
 def list_to_string(string_list):
