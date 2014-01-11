@@ -31,8 +31,12 @@ def is_folder(path):
     return os.path.isdir(path)
 
 
-def image_uploaded(photo):
+def image_uploaded(photo, return_data=False):
     res = client.photos.list(hash=hash_file(photo))
+
+    if(return_data):
+        return res
+
     if len(res) > 0:
         return True
     return False
@@ -49,11 +53,11 @@ def is_image(file):
     else:
         return False
 
-def upload_folder(folder_path, tags=[], albums=[], public=False):
+def upload_folder(folder_path, tags=[], albums=[], public=False, update_metadata=False):
     uploaded_files = 0
     for file_path in scan_folder(folder_path):
         if is_image(file_path):
-            if upload_photo(file_path, tags, albums, public):
+            if upload_photo(file_path, tags, albums, public, update_metadata):
                 uploaded_files += 1
 
     return uploaded_files
@@ -81,7 +85,7 @@ def get_album_ids(album_names):
 
     return album_ids
 
-def upload_photo(path, tagslist=[], albums=[], public=False):
+def upload_photo(path, tagslist=[], albums=[], public=False, update_metadata=False):
     sys.stdout.write('uploading ' + path + " ")
 
     if albums:
@@ -90,22 +94,45 @@ def upload_photo(path, tagslist=[], albums=[], public=False):
     # Convert list of tags to strings
     tags = list_to_string(tagslist)
     albums = list_to_string(albums)
+
     if CHECK_DUPLICATES_LOCALLY:
         if image_uploaded(path):
-            sys.stdout.write('- already uploaded (preupload check) - Ok!\n')
-            return False
+            if update_metadata:
+                sys.stdout.write('- already uploaded (preupload check), updating metadata')
+                update_photo_metadata(path, tags, albums, public)
+                return False
+            else:
+                sys.stdout.write('- already uploaded (preupload check) - Ok!\n')
+                return False
 
     try:
         client.photo.upload(path.decode(sys.getfilesystemencoding()), tags=tags, albums=albums, permission=public)
     except TroveboxDuplicateError:
-        sys.stdout.write('- already uploaded ')
+        if update_metadata:
+            sys.stdout.write('- already uploaded, updating metadata')
+            update_photo_metadata(path, tags, albums, public)
+            return False
+        else:
+            sys.stdout.write('- already uploaded - Ok')
     except TroveboxError, e:
         print e.message
     except IOError, e:
+        sys.stdout.write('- Failed!\n')
         print e
 
-    sys.stdout.write('- Ok!\n')
     return True
+
+def update_photo_metadata(path, tags, albums, public):
+    photo = image_uploaded(path, True)
+    try:
+        client.photo.update(photo[0], tags=tags, albums=albums, permission=public)
+        sys.stdout.write(' - Ok\n')
+    except TroveboxError, e:
+        sys.stdout.write('- Failed!\n')
+        print e.message
+    except IOError, e:
+        sys.stdout.write('- Failed!\n')
+        print e
 
 def list_to_string(string_list):
     # Convert list to string
@@ -133,6 +160,7 @@ def main():
     parser.add_argument("-a", "--albums", nargs='+', default=[], help="Albums to add the images to")
     parser.add_argument("-p", "--public", default=False, action="store_true", help="Make the images uploaded public, default False")
     parser.add_argument("-r", "--recursive", default=False, action="store_true", help="Also upload subfolders if target is a folder, default False")
+    parser.add_argument("-u", "--update-metadata", default=False, action="store_true", help="Also update metadata for images aldready uploaded. (Tags, albums)")
 
     args = parser.parse_args()
     global CHECK_DUPLICATES_LOCALLY
@@ -144,17 +172,18 @@ def main():
     albums = args.albums
     public = args.public
     recursive = args.recursive
+    update_metadata = args.update_metadata
     
     if is_folder(path):
         if recursive:
             for folder in recursive_search(path):
-                uploaded_files = upload_folder(folder, tags, albums, public)
+                uploaded_files = upload_folder(folder, tags, albums, public, update_metadata)
                 print "\nUploaded", uploaded_files, "images from", folder, "\n"
         else:
-            uploaded_files = upload_folder(path, tags, albums, public)
+            uploaded_files = upload_folder(path, tags, albums, public, update_metadata)
             print "\nUploaded", uploaded_files, "images from", path, "\n"
     else:
-        upload_photo(path, tags, albums, public)
+        upload_photo(path, tags, albums, public, update_metadata)
 
 
 if __name__ == '__main__':
