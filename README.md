@@ -109,6 +109,8 @@ You can install taskspooler on OSX with homebrew:
 For more info on task spooler visit: http://vicerveza.homeunix.net/~viric/soft/ts/
 
 ## Versions
+0.4.1 - Write progress to stderr and performance improvements  
+
 0.4 - Add -u option to update metadata for already uploaded files
 
 0.3.1 - Add support for unicode filenames

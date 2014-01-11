@@ -3,7 +3,7 @@
 """
 trovebox-uploader.py
 
-version 0.4
+version 0.4.1
 
 Created by Magnus Wahlberg on 2013-11-27.
 Copyright (c) 2012 Wahlberg Research And Development. All rights reserved.
@@ -17,6 +17,7 @@ import argparse
 from trovebox import Trovebox
 from trovebox.errors import TroveboxError, TroveboxDuplicateError
 
+from time import sleep
 
 # Init
 try:
@@ -55,8 +56,15 @@ def is_image(file_path):
     else:
         return False
 
-def upload_folder(folder_path, tags=[], albums=[],
+def upload_folder(folder_path, tagslist=[], albums=[],
     public=False, update_metadata=False):
+
+    if albums:
+        albums = get_album_ids(albums)
+
+    # Convert list of tags to strings
+    tags = list_to_string(tagslist)
+    albums = list_to_string(albums)
 
     uploaded_files = 0
     for file_path in scan_folder(folder_path):
@@ -83,16 +91,14 @@ def get_album_ids(album_names):
     for album_name in album_names:
         album_id = [album.id for album in albums if album.name == album_name]
         if not album_id:
-            sys.stdout.write("< No album named " + album_name + " ignoring > ")
+            sys.stderr.write("< No album named " + album_name + " ignoring > ")
         else:
             album_ids.append(album_id[0])
 
     return album_ids
 
-def upload_photo(path, tagslist=[], albums=[],
+def upload_single_photo(path, tagslist=[], albums=[],
     public=False, update_metadata=False):
-
-    sys.stdout.write('uploading ' + path + " ")
 
     if albums:
         albums = get_album_ids(albums)
@@ -101,31 +107,36 @@ def upload_photo(path, tagslist=[], albums=[],
     tags = list_to_string(tagslist)
     albums = list_to_string(albums)
 
+    upload_photo(path, tags, albums, public, update_metadata)
+
+def upload_photo(path, tags, albums, public, update_metadata):
+
+    sys.stderr.write('uploading ' + path + " ")
+
     if CHECK_DUPLICATES_LOCALLY:
         if image_uploaded(path):
             if update_metadata:
-                sys.stdout.write('- already uploaded (preupload check), updating metadata')
+                sys.stderr.write('- already uploaded (preupload check), updating metadata')
                 update_photo_metadata(path, tags, albums, public)
                 return False
             else:
-                sys.stdout.write('- already uploaded (preupload check) - Ok!\n')
+                sys.stderr.write('- already uploaded (preupload check) - Ok!\n')
                 return False
 
     try:
         client.photo.upload(path.decode(sys.getfilesystemencoding()),
             tags=tags, albums=albums, permission=public)
-
     except TroveboxDuplicateError:
         if update_metadata:
-            sys.stdout.write('- already uploaded, updating metadata')
+            sys.stderr.write('- already uploaded, updating metadata')
             update_photo_metadata(path, tags, albums, public)
             return False
         else:
-            sys.stdout.write('- already uploaded - Ok')
+            sys.stderr.write('- already uploaded - Ok\n')
     except TroveboxError, e:
         print e.message
     except IOError, e:
-        sys.stdout.write('- Failed!\n')
+        sys.stderr.write('- Failed!\n')
         print e
 
     return True
@@ -134,12 +145,12 @@ def update_photo_metadata(path, tags, albums, public):
     photo = image_uploaded(path, True)
     try:
         client.photo.update(photo[0], tags=tags, albums=albums, permission=public)
-        sys.stdout.write(' - Ok\n')
+        sys.stderr.write(' - Ok\n')
     except TroveboxError, e:
-        sys.stdout.write('- Failed!\n')
+        sys.stderr.write('- Failed!\n')
         print e.message
     except IOError, e:
-        sys.stdout.write('- Failed!\n')
+        sys.stderr.write('- Failed!\n')
         print e
 
 def list_to_string(string_list):
@@ -192,7 +203,7 @@ def main():
             uploaded_files = upload_folder(path, tags, albums, public, update_metadata)
             print "\nUploaded", uploaded_files, "images from", path, "\n"
     else:
-        upload_photo(path, tags, albums, public, update_metadata)
+        upload_single_photo(path, tags, albums, public, update_metadata)
 
 
 if __name__ == '__main__':
