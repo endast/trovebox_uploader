@@ -160,7 +160,7 @@ def main():
     parser.add_argument("-a", "--albums", nargs='+', default=[], help="Albums to add the images to")
     parser.add_argument("-p", "--public", default=False, action="store_true", help="Make the images uploaded public, default False")
     parser.add_argument("-r", "--recursive", default=False, action="store_true", help="Also upload subfolders if target is a folder, default False")
-    parser.add_argument("-u", "--update-metadata", default=False, action="store_true", help="Also update metadata for images aldready uploaded. (Tags, albums)")
+    parser.add_argument("-u", "--update-metadata", default=False, action="store_true", help="Also update metadata for images aldready uploaded. (Tags, albums etc)")
 
     args = parser.parse_args()
     global CHECK_DUPLICATES_LOCALLY
