@@ -61,7 +61,7 @@ You can of course combine all of the arguments:
     python trovebox-uploader.py -i black_knight.jpg -c -p -t pass none shall -a Grail
 
 If you have uploaded a photo but forgot to add a tag/album/permission etc,
-you can use the -u switch to update the metadata (replacing existing metadata)
+you can use the -u switch to update the metadata (replacing existing metadata). Also works for folders.
 
     python trovebox-uploader.py -i already_uploaded_but_no_tags.jpg -c -t Shrubbery Lumberjack -a Silly_Walk
 
