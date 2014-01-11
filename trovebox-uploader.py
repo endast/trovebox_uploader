@@ -48,7 +48,6 @@ def is_image(file_path):
     try:
         image_type = imghdr.what(file_path)
     except IOError, E:
-        print E
         return False
 
     if image_type in valid_types:
