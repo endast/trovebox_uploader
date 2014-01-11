@@ -17,6 +17,7 @@ import argparse
 from trovebox import Trovebox
 from trovebox.errors import TroveboxError, TroveboxDuplicateError
 
+
 # Init
 try:
     client = Trovebox()
@@ -24,7 +25,8 @@ try:
 
 except IOError, E:
     print 'Could not connect to Trovebox'
-    print 'Please check ~/.config/trovebox/default. More info: https://github.com/photo/openphoto-python'
+    print 'Please check ~/.config/trovebox/default.'
+    print 'More info: https://github.com/photo/openphoto-python'
     raise E
 
 def is_folder(path):
@@ -34,18 +36,19 @@ def is_folder(path):
 def image_uploaded(photo, return_data=False):
     res = client.photos.list(hash=hash_file(photo))
 
-    if(return_data):
+    if return_data:
         return res
 
     if len(res) > 0:
         return True
     return False
 
-def is_image(file):
+def is_image(file_path):
     valid_types = ["jpg", "jpeg", "gif", "png"]
     try:
-        image_type = imghdr.what(file)
-    except IOError, e:
+        image_type = imghdr.what(file_path)
+    except IOError, E:
+        print E
         return False
 
     if image_type in valid_types:
@@ -53,7 +56,9 @@ def is_image(file):
     else:
         return False
 
-def upload_folder(folder_path, tags=[], albums=[], public=False, update_metadata=False):
+def upload_folder(folder_path, tags=[], albums=[],
+    public=False, update_metadata=False):
+
     uploaded_files = 0
     for file_path in scan_folder(folder_path):
         if is_image(file_path):
@@ -74,10 +79,10 @@ def scan_folder(path):
 
 def get_album_ids(album_names):
     albums = client.albums.list()
-    album_ids = [] 
+    album_ids = []
 
     for album_name in album_names:
-        album_id = [album.id for album in albums if album.name == album_name] 
+        album_id = [album.id for album in albums if album.name == album_name]
         if not album_id:
             sys.stdout.write("< No album named " + album_name + " ignoring > ")
         else:
@@ -85,7 +90,9 @@ def get_album_ids(album_names):
 
     return album_ids
 
-def upload_photo(path, tagslist=[], albums=[], public=False, update_metadata=False):
+def upload_photo(path, tagslist=[], albums=[],
+    public=False, update_metadata=False):
+
     sys.stdout.write('uploading ' + path + " ")
 
     if albums:
@@ -106,7 +113,9 @@ def upload_photo(path, tagslist=[], albums=[], public=False, update_metadata=Fal
                 return False
 
     try:
-        client.photo.upload(path.decode(sys.getfilesystemencoding()), tags=tags, albums=albums, permission=public)
+        client.photo.upload(path.decode(sys.getfilesystemencoding()),
+            tags=tags, albums=albums, permission=public)
+
     except TroveboxDuplicateError:
         if update_metadata:
             sys.stdout.write('- already uploaded, updating metadata')
@@ -163,6 +172,7 @@ def main():
     parser.add_argument("-u", "--update-metadata", default=False, action="store_true", help="Also update metadata for images aldready uploaded. (Tags, albums etc)")
 
     args = parser.parse_args()
+    
     global CHECK_DUPLICATES_LOCALLY
 
     CHECK_DUPLICATES_LOCALLY = args.check_duplicates_locally
