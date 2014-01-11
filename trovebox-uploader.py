@@ -98,7 +98,7 @@ def upload_photo(path, tagslist=[], albums=[], public=False, update_metadata=Fal
     if CHECK_DUPLICATES_LOCALLY:
         if image_uploaded(path):
             if update_metadata:
-                sys.stdout.write('- already uploaded, updating metadata - Ok')
+                sys.stdout.write('- already uploaded (preupload check), updating metadata')
                 update_photo_metadata(path, tags, albums, public)
                 return False
             else:
@@ -109,7 +109,7 @@ def upload_photo(path, tagslist=[], albums=[], public=False, update_metadata=Fal
         client.photo.upload(path.decode(sys.getfilesystemencoding()), tags=tags, albums=albums, permission=public)
     except TroveboxDuplicateError:
         if update_metadata:
-            sys.stdout.write('- already uploaded, updating metadata - Ok')
+            sys.stdout.write('- already uploaded, updating metadata')
             update_photo_metadata(path, tags, albums, public)
             return False
         else:
@@ -126,9 +126,12 @@ def update_photo_metadata(path, tags, albums, public):
     photo = image_uploaded(path, True)
     try:
         client.photo.update(photo[0], tags=tags, albums=albums, permission=public)
+        sys.stdout.write(' - Ok\n')
     except TroveboxError, e:
+        sys.stdout.write('- Failed!\n')
         print e.message
     except IOError, e:
+        sys.stdout.write('- Failed!\n')
         print e
 
 def list_to_string(string_list):
