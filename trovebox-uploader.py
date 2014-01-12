@@ -17,8 +17,6 @@ import argparse
 from trovebox import Trovebox
 from trovebox.errors import TroveboxError, TroveboxDuplicateError
 
-from time import sleep
-
 # Init
 try:
     client = Trovebox()
