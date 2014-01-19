@@ -124,6 +124,9 @@ def upload_photo(path, tags, albums, public, update_metadata):
     try:
         client.photo.upload(path.decode(sys.getfilesystemencoding()),
             tags=tags, albums=albums, permission=public)
+
+        sys.stderr.write('- Ok!\n')
+
     except TroveboxDuplicateError:
         if update_metadata:
             sys.stderr.write('- already uploaded, updating metadata')
