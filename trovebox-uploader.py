@@ -3,7 +3,7 @@
 """
 trovebox-uploader.py
 
-version 0.4.1
+version 0.4.2
 
 Created by Magnus Wahlberg on 2013-11-27.
 Copyright (c) 2012 Wahlberg Research And Development. All rights reserved.
@@ -144,8 +144,18 @@ def upload_photo(path, tags, albums, public, update_metadata):
 
 def update_photo_metadata(path, tags, albums, public):
     photo = image_uploaded(path, True)
+    
+    # Add albums if needed
+    if albums:
+        for album in albums.split(","):
+            try:
+                client.album.add(album, photo, "photo")
+            except TroveboxError, e:
+                print e
+                sys.stderr.write('- Failed!\n')
+
     try:
-        client.photo.update(photo[0], tags=tags, albums=albums, permission=public)
+        client.photo.update(photo[0], tags=tags, permission=public)
         sys.stderr.write(' - Ok\n')
     except TroveboxError, e:
         sys.stderr.write('- Failed!\n')
