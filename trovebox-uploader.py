@@ -83,7 +83,7 @@ def scan_folder(path):
     return files
 
 def get_album_ids(album_names):
-    albums = client.albums.list()
+    albums = client.albums.list(pageSize=1000)
     album_ids = []
 
     for album_name in album_names:
